@@ -10,8 +10,8 @@ on:
   #    - master
 #  schedule:
  #   - cron: 0 17 * * 4
-#  watch:
-   # types: [started]
+  watch:
+    types: [started]
 
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: "K2P-5.0 JCG-836PRO-5.0 JCG-AC860M-5.0 DIR-878-5.0 DIR-882-5.0 WR1200JS JCG-AC856M-5.0"
+        TNAME: "K2P-5.0"
       run: |
         cwd=`pwd`
         CONFIG_TOOLCHAIN_DIR=${cwd//\//\\\/}\\/toolchain-mipsel
@@ -81,7 +81,7 @@ jobs:
         echo "CONFIG_FIRMWARE_INCLUDE_SMARTDNSBIN=y" >> .config #smartdns二进制文件
         echo "CONFIG_FIRMWARE_INCLUDE_TROJAN=n" >> .config #集成trojan执行文件，如果不集成，会从网上下载下来执行，不影响正常使用
         echo "CONFIG_FIRMWARE_INCLUDE_KOOLPROXY=n" >> .config #KP广告过滤
-        echo "CONFIG_FIRMWARE_INCLUDE_CADDY=y" >> .config #在线文件管理服务
+        echo "CONFIG_FIRMWARE_INCLUDE_CADDY=n" >> .config #在线文件管理服务
         echo "CONFIG_FIRMWARE_INCLUDE_CADDYBIN=n" >> .config #集成caddu执行文件，此文件有13M,请注意固件大小。如果不集成，会从网上下载下来执行，不影响正常使用
         echo "CONFIG_FIRMWARE_INCLUDE_KUMASOCKS=y" >> .config
         echo "CONFIG_FIRMWARE_INCLUDE_ADGUARDHOME=n" >> .config
@@ -102,18 +102,9 @@ jobs:
         sudo ./build_firmware_modify $m 0
         sudo mv -f images/*.trx /opt/images/
         done
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v1-release
+    - name: Upload firmware
+      uses: actions/upload-artifact@master
+      #if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        repo_token: ${{ secrets.R_TOKEN }}
-        file: /opt/images/*.trx
-        tag: AtuoBuild
-        overwrite: true
-        file_glob: true
-    - uses: ncipollo/release-action@v1
-      with:
-       bodyFile: "changelog.md"
-       tag: AtuoBuild
-       allowUpdates: true
-       name: Padavan-firmware
-       token: ${{ secrets.R_TOKEN }}
+        name: K2P_5.0
+        path: /opt/images/*.trx
