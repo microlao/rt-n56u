@@ -96,7 +96,7 @@ jobs:
         ####################################################################################
         sed -i "s/^CONFIG_TOOLCHAIN_DIR=.*$/CONFIG_TOOLCHAIN_DIR=${CONFIG_TOOLCHAIN_DIR}/g" .config
         sudo ./clear_tree_simple
-        sudo ./build_firmware_modify $m 0
+        sudo ./build_firmware_modify K2P-5.0
         sudo mv -f images/*.trx /opt/images/
         done
     - name: Upload firmware
